@@ -1,0 +1,9 @@
+# --- CẤU HÌNH THÊM CHO BACKEND ---
+
+# Bỏ qua các file thư viện nặng của Node.js
+backend/node_modules/
+node_modules/
+
+# TUYỆT ĐỐI BỎ QUA file cấu hình chứa mật khẩu, bảo mật
+backend/.env
+.env
