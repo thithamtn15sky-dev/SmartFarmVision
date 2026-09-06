@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart'; 
 import 'package:image_picker/image_picker.dart'; // Thêm thư viện chọn ảnh
 import 'diagnosis_preview_screen.dart';
+import '../widgets/app_bottom_nav_bar.dart';
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
 
@@ -42,7 +43,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
     _controller = CameraController(
       cameraDescription,
-      ResolutionPreset.high,
+      ResolutionPreset.medium,
       enableAudio: false,
     );
 
@@ -71,7 +72,12 @@ class _CameraScreenState extends State<CameraScreen> {
   // Hàm mở thư viện ảnh
   Future<void> _openGallery() async {
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 896, 
+        maxHeight: 896,
+        imageQuality: 85,
+      );
       if (image != null) {
         debugPrint("Đã chọn ảnh từ thư viện: ${image.path}");
         if (mounted) {
@@ -326,23 +332,7 @@ class _CameraScreenState extends State<CameraScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: 1, 
-        selectedItemColor: theme.colorScheme.primary,
-        unselectedItemColor: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pop(context); 
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Camera'),
-          BottomNavigationBarItem(icon: Icon(Icons.warning), label: 'Alerts'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
+      bottomNavigationBar: const AppBottomNavBar(currentTab: AppTab.camera),
     );
   }
 

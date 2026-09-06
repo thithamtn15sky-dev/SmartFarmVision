@@ -7,3 +7,10 @@ node_modules/
 # TUYỆT ĐỐI BỎ QUA file cấu hình chứa mật khẩu, bảo mật
 backend/.env
 .env
+.vscode
+# Ảnh người dùng tải lên khi quét bệnh - dữ liệu chạy, không phải mã nguồn
+backend/uploads/
+
+# File rác của macOS
+.DS_Store
+**/.DS_Store
