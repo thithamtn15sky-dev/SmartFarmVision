@@ -379,7 +379,7 @@ class DiagnosisResultScreen extends StatelessWidget {
                           if (referenceUrls.isNotEmpty) ...[
                             const SizedBox(height: 16),
                             Text(
-                              'Nguồn tham khảo',
+                              'Tổng hợp từ các nguồn',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
@@ -664,7 +664,7 @@ class _ProtocolItem extends StatelessWidget {
                 const SizedBox(width: 5),
                 Expanded(
                   child: Text(
-                    'Nguồn: $source',
+                    'Tổng hợp từ: $source',
                     style: TextStyle(
                       fontSize: 11,
                       fontStyle: FontStyle.italic,

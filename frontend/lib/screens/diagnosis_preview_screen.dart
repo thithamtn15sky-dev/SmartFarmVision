@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http; // Import thư viện gọi API
 import 'diagnosis_result_screen.dart';
 import '../api_config.dart';
+import '../colors.dart';
 
 class DiagnosisPreviewScreen extends StatefulWidget {
   final List<XFile> images; 
@@ -132,8 +133,24 @@ class _DiagnosisPreviewScreenState extends State<DiagnosisPreviewScreen> {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
       }
 
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      // Backend chặn 2 trường hợp không chẩn đoán được, cần báo cho người nuôi
+      // biết phải làm gì thay vì hiện lỗi kỹ thuật:
+      //   - ANH_KHONG_CHAN_DOAN_DUOC: ảnh gà đã luộc/làm thịt, hoặc không có gà
+      //   - KHONG_PHAT_HIEN_BENH:     gà trông khoẻ mạnh, không có dấu hiệu bệnh
+      final String? code = responseData['code']?.toString();
+      if (code == 'ANH_KHONG_CHAN_DOAN_DUOC' || code == 'KHONG_PHAT_HIEN_BENH') {
+        if (mounted) {
+          await _showNotice(
+            khongPhaiBenh: code == 'KHONG_PHAT_HIEN_BENH',
+            message: responseData['message']?.toString() ?? 'Không chẩn đoán được từ ảnh này.',
+          );
+        }
+        return;
+      }
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
         final Map<String, dynamic> realScanData = responseData['data'];
 
         if (mounted) {
@@ -149,7 +166,9 @@ class _DiagnosisPreviewScreenState extends State<DiagnosisPreviewScreen> {
           );
         }
       } else {
-        throw Exception('Lỗi Server: ${response.statusCode} - ${response.body}');
+        throw Exception(
+          responseData['message']?.toString() ?? 'Lỗi server (HTTP ${response.statusCode}).',
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -291,6 +310,49 @@ class _DiagnosisPreviewScreenState extends State<DiagnosisPreviewScreen> {
     );
   }
 
+  /// Hộp thoại cho 2 trường hợp không ra kết quả chẩn đoán:
+  /// ảnh không dùng được, hoặc gà trông khoẻ mạnh.
+  Future<void> _showNotice({required bool khongPhaiBenh, required String message}) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        icon: Icon(
+          khongPhaiBenh ? Icons.verified_outlined : Icons.image_not_supported_outlined,
+          size: 40,
+          color: khongPhaiBenh ? AgriTechColors.primary : colorScheme.error,
+        ),
+        title: Text(
+          khongPhaiBenh ? 'Không phát hiện dấu hiệu bệnh' : 'Ảnh chưa dùng để chẩn đoán được',
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(fontSize: 13, height: 1.45),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Đã hiểu'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              // Quay lại màn Camera để chụp lại, mang theo ảnh đã chụp.
+              Navigator.pop(context, _capturedImages);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AgriTechColors.primary,
+              foregroundColor: AgriTechColors.onPrimary,
+            ),
+            child: const Text('Chụp lại'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -307,13 +369,14 @@ class _DiagnosisPreviewScreenState extends State<DiagnosisPreviewScreen> {
           // Bấm nút back thì khóa lại nếu đang xử lý AI
           onPressed: _isProcessing ? null : () => Navigator.pop(context, _capturedImages), 
         ),
+        centerTitle: true,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.location_on, color: colorScheme.primary, size: 20),
+            Icon(Icons.photo_camera, color: colorScheme.primary, size: 20),
             const SizedBox(width: 8),
             Text(
-              'AgriVision • North Pasture',
+              'SmartFarm',
               style: TextStyle(
                 color: colorScheme.primary,
                 fontWeight: FontWeight.bold,
@@ -322,12 +385,6 @@ class _DiagnosisPreviewScreenState extends State<DiagnosisPreviewScreen> {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications, color: colorScheme.onSurfaceVariant),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Stack(
         children: [

@@ -197,7 +197,7 @@ class _ScanDetailScreenState extends State<ScanDetailScreen> {
               if (urls.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Text(
-                  'Nguồn tham khảo',
+                  'Tổng hợp từ các nguồn',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -465,7 +465,7 @@ class _AdviceTile extends StatelessWidget {
                 const SizedBox(width: 5),
                 Expanded(
                   child: Text(
-                    'Nguồn: ${advice.nguon.map(_host).join(', ')}',
+                    'Tổng hợp từ: ${advice.nguon.map(_host).join(', ')}',
                     style: TextStyle(
                       fontSize: 11,
                       fontStyle: FontStyle.italic,

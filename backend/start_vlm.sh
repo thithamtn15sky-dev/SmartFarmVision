@@ -23,7 +23,7 @@ done
 if lsof -nP -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
   echo "⚠️  Port $PORT đang có tiến trình chạy:"
   lsof -nP -iTCP:"$PORT" -sTCP:LISTEN | tail -n +2
-  echo "    Dừng nó bằng: kill \$(lsof -ti tcp:$PORT)   hoặc đổi port: VLM_PORT=8082 ./start_vlm.sh"
+  echo "    Dừng nó bằng: kill \$(lsof -ti tcp:$PORT)   hoặc đổi port: VLM_PORT=8090 ./start_vlm.sh"
   exit 1
 fi
 

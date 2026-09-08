@@ -130,10 +130,10 @@ class _HomeScreenState extends State<HomeScreen> {
       elevation: 0,
       title: Row(
         children: [
-          Icon(Icons.location_on, color: Theme.of(context).colorScheme.primary),
+          Icon(Icons.photo_camera, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 8),
           Text(
-            'SmartFarm • North Pasture',
+            'SmartFarm',
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.bold,

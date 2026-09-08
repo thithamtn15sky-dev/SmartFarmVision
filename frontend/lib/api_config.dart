@@ -8,7 +8,7 @@ class ApiConfig {
   // - BlueStacks / máy thật: dùng IP LAN của máy tính (bên dưới).
   // - Emulator Android Studio (AVD): đổi thành http://10.0.2.2:3000
   // - Chrome/máy tính: có thể dùng http://localhost:3000
-  static const String baseUrl = 'http://192.168.1.39:3000';
+  static const String baseUrl = 'http://172.17.17.207:3000';
 
   // 2. Endpoint chẩn đoán bệnh qua ảnh
   static const String analyzePoultry = '$baseUrl/api/poultry/analyze';

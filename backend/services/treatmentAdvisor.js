@@ -87,6 +87,7 @@ Trả về JSON đúng cấu trúc:
             temperature: 0,
             max_tokens: 1600,
             response_format: { type: 'json_object' },
+            repeat_penalty: 1.15,
         },
         { timeout: 180000 }
     );
