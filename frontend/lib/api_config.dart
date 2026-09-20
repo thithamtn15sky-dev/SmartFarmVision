@@ -1,14 +1,29 @@
 // lib/api_config.dart
 
 class ApiConfig {
-  // 1. Khai báo Base URL (Địa chỉ gốc của Backend)
-  // TODO: Cập nhật IP máy tính của bạn ở đây khi kết nối mạng WiFi mới
+  // 1. Địa chỉ gốc của Backend.
   //
-  // Cách lấy IP hiện tại trên macOS: ipconfig getifaddr en0
-  // - BlueStacks / máy thật: dùng IP LAN của máy tính (bên dưới).
-  // - Emulator Android Studio (AVD): đổi thành http://10.0.2.2:3000
-  // - Chrome/máy tính: có thể dùng http://localhost:3000
-  static const String baseUrl = 'http://172.17.17.207:3000';
+  // KHÔNG sửa file này khi đổi mạng WiFi. Truyền địa chỉ lúc chạy:
+  //
+  //   flutter run --dart-define=API_BASE_URL=http://192.168.1.74:3000
+  //
+  // hoặc gọn hơn:  ./run.sh          (tự dò IP LAN của máy)
+  //
+  // Vì sao không để IP cố định trong mã nguồn: IP LAN đổi mỗi khi chuyển mạng,
+  // và mỗi người chạy dự án lại có IP khác. Ghi cứng vào đây thì cứ đổi mạng là
+  // phải sửa mã rồi commit một thay đổi vô nghĩa, còn người khác tải về thì
+  // chắc chắn sai.
+  //
+  // Chọn địa chỉ theo nơi chạy ứng dụng:
+  // - Máy thật / BlueStacks : IP LAN của máy tính (ipconfig getifaddr en0)
+  // - Emulator Android (AVD): http://10.0.2.2:3000
+  // - Chrome, macOS desktop : http://localhost:3000  (mặc định bên dưới)
+  //
+  // fromEnvironment là hằng biên dịch nên mọi endpoint bên dưới vẫn giữ const.
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://localhost:3000',
+  );
 
   // 2. Endpoint chẩn đoán bệnh qua ảnh
   static const String analyzePoultry = '$baseUrl/api/poultry/analyze';
