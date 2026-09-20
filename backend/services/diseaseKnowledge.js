@@ -7,54 +7,19 @@ const mongoose = require('mongoose');
 // Nội dung và link đều đọc thẳng từ DB, KHÔNG để model tự sinh - model 2B được
 // yêu cầu chép lại URL sẽ bịa ra link không tồn tại.
 
-// Nhãn bệnh dùng trong app khác với benh_tag lưu trong DB nên phải ánh xạ.
-const LABEL_TO_TAG = {
-    'Cúm gia cầm (H5N1)': 'Cúm gia cầm',
-    'Newcastle (Gà rù)': 'Newcastle',
-    'Newcastle': 'Newcastle',
-    'Đậu gà': 'Đậu gà',
-    'Cầu trùng': 'Cầu trùng',
-    'Sổ mũi truyền nhiễm (Coryza)': 'Sổ mũi truyền nhiễm',
-};
+// Mọi cách gọi tên bệnh (nhãn app, benh_tag trong DB, tên tiếng Anh model hay
+// trả về) đều quy về MÃ chuẩn trong constants/diseaseCodes.js. Trước đây bảng
+// ánh xạ nằm rải trong file này còn notebook lại so trực tiếp benh_lien_quan với
+// benh_tag - hai trường vốn viết khác nhau ở 3/5 bệnh, nên bộ lọc trượt.
+const { DISEASE_CODES, toCode, labelOf, tagOf } = require('../constants/diseaseCodes');
 
-// Tên gọi khác của từng bệnh. Model hay trả về tên rút gọn hoặc tên tiếng Anh
-// ("Coryza", "H5N1", "Newcastle"), trước đây đều bị coi là không hợp lệ.
-const ALIAS_TO_TAG = {
-    'cúm gia cầm': 'Cúm gia cầm', 'cum gia cam': 'Cúm gia cầm',
-    'h5n1': 'Cúm gia cầm', 'cúm a': 'Cúm gia cầm',
-    'avian influenza': 'Cúm gia cầm', 'bird flu': 'Cúm gia cầm', 'hpai': 'Cúm gia cầm',
-    'newcastle': 'Newcastle', 'gà rù': 'Newcastle', 'ga ru': 'Newcastle', 'ndv': 'Newcastle',
-    'đậu gà': 'Đậu gà', 'dau ga': 'Đậu gà', 'fowl pox': 'Đậu gà', 'fowlpox': 'Đậu gà',
-    'cầu trùng': 'Cầu trùng', 'cau trung': 'Cầu trùng',
-    'coccidiosis': 'Cầu trùng', 'eimeria': 'Cầu trùng',
-    'sổ mũi truyền nhiễm': 'Sổ mũi truyền nhiễm', 'so mui truyen nhiem': 'Sổ mũi truyền nhiễm',
-    'coryza': 'Sổ mũi truyền nhiễm', 'avibacterium': 'Sổ mũi truyền nhiễm',
-};
+const LABEL_TO_TAG = Object.fromEntries(DISEASE_CODES.map((d) => [d.label, d.tag]));
+const TAG_TO_LABEL = Object.fromEntries(DISEASE_CODES.map((d) => [d.tag, d.label]));
 
 /// Đưa nhãn bất kỳ về đúng benh_tag trong BenhGiaCam.
 function resolveTag(label) {
-    if (!label) return null;
-    const trimmed = String(label).trim();
-    if (LABEL_TO_TAG[trimmed]) return LABEL_TO_TAG[trimmed];
-
-    const normalized = trimmed.toLowerCase();
-
-    // Khớp theo tên gọi khác, ưu tiên alias dài nhất để "cúm gia cầm" không bị
-    // alias ngắn hơn cướp mất.
-    const aliases = Object.keys(ALIAS_TO_TAG).sort((a, b) => b.length - a.length);
-    for (const alias of aliases) {
-        if (normalized.includes(alias)) return ALIAS_TO_TAG[alias];
-    }
-
-    // Model đôi khi trả nhãn hơi lệch (thiếu/thừa phần trong ngoặc),
-    // nên đối chiếu thêm bằng cách so khớp lỏng.
-    for (const [appLabel, tag] of Object.entries(LABEL_TO_TAG)) {
-        const shortLabel = appLabel.replace(/\s*\(.*?\)\s*/g, '').toLowerCase();
-        if (normalized.includes(shortLabel) || shortLabel.includes(normalized)) {
-            return tag;
-        }
-    }
-    return null;
+    const ma = toCode(label);
+    return ma ? tagOf(ma) : null;
 }
 
 /// Cứu trường hợp model trả về MÔ TẢ TRIỆU CHỨNG thay vì tên bệnh.
@@ -68,7 +33,7 @@ async function labelFromSymptomText(raw) {
 
     const rows = await mongoose.connection.db
         .collection('TrieuChung')
-        .find({}, { projection: { mo_ta: 1, benh_lien_quan: 1 } })
+        .find({}, { projection: { mo_ta: 1, benh_lien_quan: 1, benh_ma: 1 } })
         .toArray();
 
     // So khớp theo TỪ chứ không theo chuỗi con: chữ trên chip của app
@@ -88,7 +53,8 @@ async function labelFromSymptomText(raw) {
     for (const row of rows) {
         const moTa = String(row.mo_ta || '');
         if (!moTa) continue;
-        const raws = Array.isArray(row.benh_lien_quan) ? row.benh_lien_quan : [row.benh_lien_quan];
+        // Ưu tiên benh_ma (mã chuẩn) - benh_lien_quan chỉ là tên hiển thị.
+        const raws = dsBenh(row);
         // Triệu chứng dùng chung nhiều bệnh thì không suy ra được bệnh nào.
         if (raws.length !== 1) continue;
 
@@ -104,26 +70,22 @@ async function labelFromSymptomText(raw) {
     }
 
     // Phải trùng phần lớn số từ mới dám kết luận, tránh khớp bừa.
-    if (diemCaoNhat >= 0.6 && totNhat) {
-        const tag = resolveTag(totNhat);
-        if (tag) return TAG_TO_LABEL[tag] || tag;
-    }
+    if (diemCaoNhat >= 0.6 && totNhat) return canonicalLabel(totNhat);
     return null;
 }
 
-// Ánh xạ ngược: benh_tag trong DB -> nhãn đầy đủ dùng trong app/notebook.
-const TAG_TO_LABEL = {
-    'Cúm gia cầm': 'Cúm gia cầm (H5N1)',
-    'Newcastle': 'Newcastle (Gà rù)',
-    'Đậu gà': 'Đậu gà',
-    'Cầu trùng': 'Cầu trùng',
-    'Sổ mũi truyền nhiễm': 'Sổ mũi truyền nhiễm (Coryza)',
-};
-
 /// Đưa nhãn bất kỳ (dạng ngắn hay đầy đủ) về nhãn đầy đủ chuẩn.
 function canonicalLabel(raw) {
-    const tag = resolveTag(raw);
-    return tag ? TAG_TO_LABEL[tag] || tag : null;
+    const ma = toCode(raw);
+    return ma ? labelOf(ma) : null;
+}
+
+/// Lấy danh sách bệnh của một bản ghi TrieuChung.
+/// Ưu tiên benh_ma do script normalize-disease-codes.js gắn; bản ghi cũ chưa có
+/// mã thì lùi về benh_lien_quan để dữ liệu chưa migrate vẫn tra được.
+function dsBenh(row) {
+    const raw = (row.benh_ma && row.benh_ma.length) ? row.benh_ma : row.benh_lien_quan;
+    return Array.isArray(raw) ? raw : [raw].filter(Boolean);
 }
 
 /// Danh mục triệu chứng đọc thẳng từ collection TrieuChung.
@@ -138,7 +100,7 @@ function canonicalLabel(raw) {
 async function getSymptomCatalog(viTri = null) {
     const rows = await mongoose.connection.db
         .collection('TrieuChung')
-        .find({}, { projection: { mo_ta: 1, vi_tri_quan_sat: 1, benh_lien_quan: 1 } })
+        .find({}, { projection: { mo_ta: 1, vi_tri_quan_sat: 1, benh_lien_quan: 1, benh_ma: 1 } })
         .toArray();
     if (rows.length === 0) return null;
 
@@ -146,7 +108,7 @@ async function getSymptomCatalog(viTri = null) {
     // Cầu trùng lẫn Newcastle) nên phải trải ra, không lấy mỗi phần tử đầu.
     const byDisease = new Map();
     for (const row of rows) {
-        const raws = Array.isArray(row.benh_lien_quan) ? row.benh_lien_quan : [row.benh_lien_quan];
+        const raws = dsBenh(row);
         for (const raw of raws) {
             const label = canonicalLabel(raw);
             if (!label) continue;
@@ -209,13 +171,18 @@ async function getSymptomCatalog(viTri = null) {
 /// Lấy phác đồ điều trị và phòng ngừa của một bệnh, kèm nguồn tham khảo.
 /// Trả về null nếu không tra được để phía gọi tự xử lý.
 async function getDiseaseKnowledge(label) {
-    const tag = resolveTag(label);
-    if (!tag) return null;
+    const ma = toCode(label);
+    if (!ma) return null;
+    const tag = tagOf(ma);
 
+    // Lọc theo mã chuẩn; bản ghi chưa gắn mã vẫn bắt được qua benh_tag cũ.
     const docs = await mongoose.connection.db
         .collection('BenhGiaCam')
         .find(
-            { benh_tag: tag, phan_loai: { $in: ['dieu_tri', 'phong_ngua'] } },
+            {
+                $or: [{ benh_ma: ma }, { benh_ma: { $exists: false }, benh_tag: tag }],
+                phan_loai: { $in: ['dieu_tri', 'phong_ngua'] },
+            },
             { projection: { noi_dung_goc: 1, phan_loai: 1, url_nguon: 1 } }
         )
         .toArray();
@@ -232,7 +199,7 @@ async function getDiseaseKnowledge(label) {
     const phongNgua = docs.filter((d) => d.phan_loai === 'phong_ngua').map(format);
     const urls = [...new Set(docs.map((d) => d.url_nguon).filter(Boolean))];
 
-    return { tag, dieu_tri: dieuTri, phong_ngua: phongNgua, url_tham_khao: urls };
+    return { ma, tag, dieu_tri: dieuTri, phong_ngua: phongNgua, url_tham_khao: urls };
 }
 
 module.exports = {
