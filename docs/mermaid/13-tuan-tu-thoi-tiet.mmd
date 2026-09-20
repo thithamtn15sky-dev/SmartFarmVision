@@ -1,0 +1,31 @@
+%% Hình 4.x - Sơ đồ tuần tự: Thời tiết và đánh giá môi trường chuồng nuôi
+%% THI = 0.8 x T + RH x (T - 14.4) / 100 + 46.4 ; ngưỡng 74 / 79 / 84.
+sequenceDiagram
+    autonumber
+    actor ND as Người nuôi
+    participant App as home_screen
+    participant API as weatherController
+    participant GEO as Open-Meteo Geocoding
+    participant OM as Open-Meteo Forecast
+
+    ND->>App: Mở trang chủ
+    App->>API: GET /api/weather/current?city=Hồ Chí Minh
+
+    alt Còn dữ liệu trong bộ nhớ đệm dưới 10 phút
+        API-->>App: Trả ngay dữ liệu đã lưu (cached = true)
+    else Hết hạn hoặc chưa có
+        API->>API: Bỏ dấu tiếng Việt tên thành phố
+        Note over API,GEO: "Đà Lạt" tra thẳng bị trả nhầm thành "Đã Tịch",<br/>tra "Da Lat" mới đúng
+        API->>GEO: Tìm toạ độ theo tên không dấu
+        alt Không có kết quả
+            API->>GEO: Thử lại với tên nguyên văn
+        end
+        GEO-->>API: Vĩ độ, kinh độ, múi giờ
+        API->>OM: Lấy nhiệt độ, độ ẩm, lượng mưa, gió, mã thời tiết
+        OM-->>API: Số liệu hiện tại
+        API->>API: Tính THI rồi phân mức<br/>An toàn / Cảnh báo / Nguy hiểm / Khẩn cấp
+        API->>API: Lưu vào bộ nhớ đệm 10 phút
+        API-->>App: Nhiệt độ, độ ẩm, biểu tượng, THI, khuyến nghị
+    end
+
+    App-->>ND: Thẻ thời tiết: có hợp cho chuồng hay không<br/>kèm việc nên làm ngay

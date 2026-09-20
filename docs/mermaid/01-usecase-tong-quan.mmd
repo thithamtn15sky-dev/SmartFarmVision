@@ -1,0 +1,57 @@
+%% Hình 3.x - Sơ đồ use case tổng quan SmartFarm Vision
+%% Toàn bộ nghiệp vụ người nuôi thực hiện được trên ứng dụng.
+flowchart LR
+    ND(("Người nuôi"))
+    HT(("Hệ thống<br/>tự động"))
+
+    subgraph QLC["Quản lý chuồng trại"]
+        UC1["Xem danh sách chuồng<br/>đang nuôi / đã xuất"]
+        UC2["Thêm chuồng mới<br/>theo giống gà"]
+        UC3["Xem chi tiết chuồng"]
+        UC4["Ghi nhận hao hụt đàn"]
+        UC5["Xuất chuồng"]
+    end
+
+    subgraph TP["Tiêm phòng"]
+        UC6["Xem lịch tiêm của chuồng"]
+        UC7["Đánh dấu đã tiêm một mũi"]
+        UC8["Nhận cảnh báo mũi quá hạn<br/>và mũi hết hiệu lực"]
+        UC9["Quét trễ hẹn,<br/>hạ điểm an toàn"]
+    end
+
+    subgraph CD["Chẩn đoán bệnh"]
+        UC10["Chụp ảnh / chọn ảnh từ máy"]
+        UC11["Khai báo triệu chứng quan sát được"]
+        UC12["Nhận chẩn đoán và phác đồ<br/>kèm nguồn tham khảo"]
+        UC13["Xem lịch sử scan"]
+        UC14["Xem chi tiết một lần scan"]
+    end
+
+    subgraph MT["Môi trường nuôi"]
+        UC15["Xem thời tiết hiện tại"]
+        UC16["Xem đánh giá THI<br/>có hợp cho chuồng không"]
+    end
+
+    ND --- UC1
+    ND --- UC2
+    ND --- UC3
+    ND --- UC4
+    ND --- UC5
+    ND --- UC6
+    ND --- UC7
+    ND --- UC8
+    ND --- UC10
+    ND --- UC11
+    ND --- UC12
+    ND --- UC13
+    ND --- UC14
+    ND --- UC15
+    ND --- UC16
+    HT --- UC9
+    HT --- UC8
+
+    UC2 -.->|"include"| UC6
+    UC10 -.->|"include"| UC11
+    UC11 -.->|"include"| UC12
+    UC12 -.->|"extend"| UC13
+    UC15 -.->|"include"| UC16

@@ -1,0 +1,54 @@
+%% Hình 4.3 - Sơ đồ tuần tự quy trình chẩn đoán bệnh (nghiệp vụ chính)
+%% Ba lượt gọi mô hình, hai cổng kiểm soát đầu vào.
+sequenceDiagram
+    autonumber
+    actor ND as Người nuôi
+    participant App as Ứng dụng Flutter
+    participant API as Máy chủ API
+    participant VLM as Mô hình Qwen3-VL
+    participant DB as MongoDB Atlas
+
+    ND->>App: Chụp ảnh gà, chọn triệu chứng quan sát được
+    App->>API: POST /api/poultry/analyze (ảnh + lời khai)
+    API->>API: Lưu ảnh vào uploads/, chuyển sang Base64
+
+    rect rgb(234, 240, 230)
+    Note over API,VLM: Lượt 1 - Quan sát ảnh thuần tuý
+    API->>VLM: Ảnh, KHÔNG kèm danh sách bệnh
+    VLM-->>API: Phân loại ảnh + mô tả 4 vùng cơ thể
+    end
+
+    alt Gà đã làm thịt hoặc ảnh không có gà
+        API-->>App: 422 ANH_KHONG_CHAN_DOAN_DUOC
+        App-->>ND: Hộp thoại hướng dẫn chụp lại
+    else Ảnh hợp lệ
+        API->>DB: Tra TrieuChung theo lời khai
+        DB-->>API: Bệnh đối chứng (tất định, không qua mô hình)
+
+        rect rgb(234, 240, 230)
+        Note over API,VLM: Lượt 2 - Chẩn đoán
+        API->>VLM: Kiến thức bệnh + mô tả ảnh + lời khai đặt CUỐI prompt
+        VLM-->>API: JSON chẩn đoán phân biệt
+        end
+
+        API->>API: Chuẩn hoá nhãn về 5 bệnh chuẩn
+
+        alt Gà khoẻ và người nuôi không khai triệu chứng
+            API-->>App: 200 KHONG_PHAT_HIEN_BENH
+            App-->>ND: Thông báo không phát hiện bệnh
+        else Có dấu hiệu bệnh
+            API->>DB: Lọc BenhGiaCam theo benh_tag
+            DB-->>API: Phác đồ điều trị, phòng ngừa + URL nguồn
+
+            rect rgb(234, 240, 230)
+            Note over API,VLM: Lượt 3 - Sinh lời khuyên (RAG)
+            API->>VLM: Tài liệu đánh số [1] [2] [3]
+            VLM-->>API: Lời khuyên tự viết, trích dẫn theo số
+            end
+
+            API->>API: Ánh xạ số về URL thật, loại trích dẫn không tồn tại
+            API->>DB: Lưu kết quả vào poultryscans
+            API-->>App: Chẩn đoán + phác đồ + nguồn tham khảo
+            App-->>ND: Màn hình kết quả
+        end
+    end

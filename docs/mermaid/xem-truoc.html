@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Sơ đồ SmartFarm Vision</title>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; margin: 0; background: #FBFAF7; color: #1B1F1A; }
+  header { padding: 28px 24px 12px; border-bottom: 1px solid #D8D8CF; }
+  h1 { margin: 0 0 6px; font-size: 22px; }
+  header p { margin: 0; color: #52584E; font-size: 14px; }
+  main { padding: 24px; display: grid; gap: 28px; }
+  section { background: #fff; border: 1px solid #D8D8CF; padding: 18px; }
+  h2 { margin: 0 0 12px; font-size: 15px; font-family: ui-monospace, Menlo, monospace; color: #2D5A27; }
+  .box { overflow-x: auto; }
+  .err { color: #8F2B23; font-family: ui-monospace, Menlo, monospace; font-size: 13px; white-space: pre-wrap; }
+</style>
+<header>
+  <h1>Sơ đồ Mermaid — SmartFarm Vision</h1>
+  <p>Mở bằng <code>python3 -m http.server 8080</code> trong thư mục này, rồi vào http://localhost:8080/xem-truoc.html</p>
+</header>
+<main id="main"></main>
+<script type="module">
+const FILES = [
+  '01-usecase-tong-quan.mmd','02-kien-truc-he-thong.mmd','03-erd-du-lieu.mmd',
+  '04-luong-man-hinh.mmd','05-tuan-tu-chan-doan-benh.mmd','06-hoat-dong-chan-doan.mmd',
+  '07-tuan-tu-them-chuong.mmd','08-tuan-tu-danh-dau-tiem.mmd','09-tuan-tu-xuat-chuong.mmd',
+  '10-tuan-tu-ghi-nhan-hao-hut.mmd','11-tuan-tu-quet-tre-han.mmd','12-tuan-tu-lich-su-scan.mmd',
+  '13-tuan-tu-thoi-tiet.mmd','14-trang-thai-chuong.mmd','15-trang-thai-mui-tiem.mmd'
+];
+const mermaid = (await import('https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs')).default;
+mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+const main = document.getElementById('main');
+let i = 0;
+for (const f of FILES) {
+  const sec = document.createElement('section');
+  const h2 = document.createElement('h2'); h2.textContent = f; sec.appendChild(h2);
+  const box = document.createElement('div'); box.className = 'box'; sec.appendChild(box);
+  main.appendChild(sec);
+  try {
+    const code = await (await fetch(f)).text();
+    const { svg } = await mermaid.render('d' + (i++), code);
+    box.innerHTML = svg;
+  } catch (e) {
+    box.innerHTML = '<p class="err">Lỗi: ' + (e.message || e) + '</p>';
+  }
+}
+</script>

@@ -1,0 +1,31 @@
+%% Hình 4.x - Kiến trúc triển khai hệ thống
+%% Toàn bộ mô hình AI chạy cục bộ trên máy trạm, không gọi dịch vụ trả phí.
+flowchart TB
+    subgraph DEV["Thiết bị người nuôi"]
+        APP["Ứng dụng Flutter<br/>(Android / BlueStacks)"]
+    end
+
+    subgraph MAY["Máy trạm - Apple M4, 16GB RAM"]
+        API["Máy chủ API<br/>Node.js + Express : 3000"]
+        LLAMA["llama.cpp server : 8081<br/>Qwen3-VL-2B-Instruct Q4_K_M<br/>+ mmproj Q8_0 (thị giác)"]
+        UP["Thư mục uploads/<br/>ảnh gốc người nuôi gửi lên"]
+    end
+
+    subgraph CLOUD["Dịch vụ ngoài"]
+        DB[("MongoDB Atlas<br/>SmartFarmData")]
+        OM["Open-Meteo API<br/>miễn phí, không cần khoá"]
+    end
+
+    APP -->|"HTTP multipart/form-data<br/>ảnh + lời khai"| API
+    APP -->|"HTTP JSON<br/>chuồng, tiêm phòng, thời tiết"| API
+    API -->|"OpenAI-compatible<br/>/v1/chat/completions"| LLAMA
+    LLAMA -->|"JSON kết quả"| API
+    API -->|"Mongoose"| DB
+    API -->|"HTTPS, cache 10 phút"| OM
+    API --> UP
+    APP -->|"tải ảnh tĩnh"| UP
+
+    classDef local fill:#EAF0E6,stroke:#2D5A27,color:#1B1F1A
+    classDef ext fill:#F6EEDE,stroke:#8A5A12,color:#1B1F1A
+    class API,LLAMA,UP local
+    class DB,OM ext

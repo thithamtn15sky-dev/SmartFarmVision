@@ -1,0 +1,38 @@
+%% Hình 4.x - Sơ đồ tuần tự: Đánh dấu đã tiêm một mũi vắc-xin
+%% Có chặn xác nhận trùng để không cộng dồn sai điểm an toàn.
+sequenceDiagram
+    autonumber
+    actor ND as Người nuôi
+    participant App as coop_detail_screen
+    participant API as vaccinationController
+    participant DB as MongoDB Atlas
+
+    ND->>App: Mở chi tiết chuồng
+    App->>API: GET /api/vaccination/coops/{coopId}/dashboard
+    API->>DB: Đọc chuồng + danh mục vắc-xin
+    DB-->>API: Bản ghi tiêm + thông tin vắc-xin
+    Note over API: Với mỗi mũi: tính ngày dự kiến,<br/>số ngày còn tới hạn, hiệu lực còn lại,<br/>nâng PENDING đã trễ lên OVERDUE
+    API-->>App: Tiến độ, mũi kế tiếp, cảnh báo hiệu lực
+    App-->>ND: Hiển thị danh sách mũi tiêm
+
+    ND->>App: Bấm Hoàn thành mũi tiêm
+    App-->>ND: Hộp thoại xác nhận
+    ND->>App: Đồng ý
+    App->>API: PATCH /api/vaccination/coops/{coopId}/vaccines/{vaccineId}/complete
+
+    alt Không tìm thấy chuồng hoặc mã vắc-xin
+        API-->>App: 404 - Không tìm thấy
+    else Mũi này đã xác nhận trước đó
+        API-->>App: 409 - Mũi đã được xác nhận
+        App-->>ND: Thông báo không cho tiêm trùng
+    else Hợp lệ
+        API->>API: status = COMPLETED, ghi completed_at và người tiêm
+        API->>API: Tính lại vaccination_summary, xác định mũi kế tiếp
+        API->>API: safety_score + 5 (tối đa 100)
+        API->>DB: Lưu chuồng
+        DB-->>API: Đã lưu
+        API-->>App: 200 - Tiến độ mới + điểm an toàn
+        App->>API: Gọi lại dashboard để làm mới màn hình
+        API-->>App: Dữ liệu mới
+        App-->>ND: Mũi chuyển sang Đã tiêm, hiện hiệu lực còn lại
+    end

@@ -1,0 +1,21 @@
+%% Hình 4.x - Sơ đồ trạng thái của một mũi vắc-xin trong lịch tiêm
+stateDiagram-v2
+    direction LR
+    [*] --> PENDING : Sinh lịch khi tạo chuồng<br/>ngày dự kiến = ngày vào đàn + ngày tuổi tiêm
+
+    PENDING --> OVERDUE : Quá ngày dự kiến 24 giờ<br/>điểm an toàn - 10
+    PENDING --> COMPLETED : Người nuôi xác nhận đã tiêm<br/>điểm an toàn + 5
+    OVERDUE --> COMPLETED : Tiêm bù muộn
+    PENDING --> SKIPPED : Bỏ mũi (thú y chỉ định)
+    OVERDUE --> SKIPPED : Bỏ mũi
+
+    COMPLETED --> CON_HIEU_LUC : Trong thời gian hiệu lực
+    CON_HIEU_LUC --> HET_HIEU_LUC : Quá số ngày hiệu lực của vắc-xin
+    HET_HIEU_LUC --> [*] : Màn hình chi tiết hiện CẢNH BÁO hết tác dụng
+    SKIPPED --> [*]
+
+    note left of PENDING
+        Trạng thái lưu trong CSDL: PENDING, COMPLETED, OVERDUE, SKIPPED.
+        OVERDUE còn được suy ra động lúc đọc dữ liệu
+        nên giao diện vẫn đúng kể cả khi tác vụ quét chưa chạy.
+    end note

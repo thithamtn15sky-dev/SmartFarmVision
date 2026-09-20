@@ -1,0 +1,35 @@
+%% Hình 4.x - Sơ đồ tuần tự: Quét mũi tiêm trễ hẹn và hạ điểm an toàn (BR-03)
+%% Chạy định kỳ, quét mọi chuồng còn nuôi.
+sequenceDiagram
+    autonumber
+    participant CRON as Tác vụ định kỳ
+    participant API as vaccinationController
+    participant DB as MongoDB Atlas
+    actor ND as Người nuôi
+    participant App as Ứng dụng Flutter
+
+    CRON->>API: POST /api/vaccination/coops/check-overdue
+    API->>DB: Lấy mọi chuồng có status = ACTIVE
+    DB-->>API: Danh sách chuồng
+    API->>DB: Đọc danh mục vắc-xin
+    DB-->>API: inject_at_day, effectiveness_days
+
+    loop Với từng chuồng
+        Note over API: Dữ liệu cũ thiếu scheduled_date nên phải<br/>suy ra từ ngày vào đàn rồi mới so sánh
+        API->>API: Bù scheduled_date cho các bản ghi còn thiếu
+        alt Có mũi PENDING trễ quá 24 giờ
+            API->>API: status = OVERDUE
+            API->>API: safety_score - 10 (không thấp hơn 0)
+            API->>API: Tính lại vaccination_summary
+            API->>DB: Lưu chuồng
+        else Không có mũi trễ
+            Note over API: Bỏ qua, không ghi lại
+        end
+    end
+
+    API-->>CRON: Danh sách chuồng đã bị hạ điểm
+
+    ND->>App: Lần mở ứng dụng kế tiếp
+    App->>API: GET /api/vaccination/coops
+    API-->>App: Chuồng trễ lịch có overdue_count > 0,<br/>điểm an toàn đã giảm
+    App-->>ND: Thẻ chuồng hiện cảnh báo mũi quá hạn

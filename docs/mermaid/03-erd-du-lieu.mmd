@@ -1,0 +1,70 @@
+%% Hình 3.x - Sơ đồ thực thể quan hệ (MongoDB Atlas - CSDL SmartFarmData)
+erDiagram
+    DanhMucGiong ||--o{ ChuongTrai : "quy dinh phac do va so ngay nuoi"
+    ChuongTrai ||--|{ BanGhiTiem : "nhung ben trong"
+    LichTiemPhong ||--o{ BanGhiTiem : "tra cuu theo vaccine_id"
+    TrieuChung }o--o{ BenhGiaCam : "cung benh_tag"
+    BenhGiaCam ||--o{ poultryscans : "nguon phac do trich dan"
+    ChuongTrai ||--o{ poultryscans : "flockId"
+
+    DanhMucGiong {
+        string id_giong PK
+        string ten_giong
+        string muc_dich_nuoi
+        number harvest_days
+        number trong_luong_xuat_chuong_kg
+        array phac_do_vaccine
+    }
+    ChuongTrai {
+        string _id PK
+        string farmId
+        string name
+        string breed_id FK
+        number quantity
+        number initial_quantity
+        number current_quantity
+        date flock_start_date
+        date harvest_target_date
+        date harvested_at
+        string status
+        number safety_score
+        object vaccination_summary
+    }
+    BanGhiTiem {
+        string vaccine_id FK
+        date scheduled_date
+        string status
+        date completed_at
+        string administered_by
+    }
+    LichTiemPhong {
+        string id_vacxin PK
+        string ten_vacxin
+        string benh_phong_ngua
+        string thoi_diem_tiem_chuan
+        number inject_at_day
+        number effectiveness_days
+        string phuong_phap_cap
+    }
+    TrieuChung {
+        string id_trieu_chung PK
+        string ten_trieu_chung
+        string vung_co_the
+        array benh_tag
+    }
+    BenhGiaCam {
+        string _id PK
+        string benh_tag
+        string loai_noi_dung
+        string noi_dung_goc
+        string url_nguon
+    }
+    poultryscans {
+        objectid _id PK
+        date scannedAt
+        object basicInfo
+        object media
+        object clinicalFindings
+        object aiDiagnosis
+        string flockId
+    }

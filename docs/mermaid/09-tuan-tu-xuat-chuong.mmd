@@ -1,0 +1,37 @@
+%% Hình 4.x - Sơ đồ tuần tự: Xuất chuồng (đóng lứa nuôi)
+%% Gà thịt lớn nhanh nên hệ thống đếm ngày tới lứa và cảnh báo quá lứa.
+sequenceDiagram
+    autonumber
+    actor ND as Người nuôi
+    participant App as coops_screen
+    participant API as coopController
+    participant DB as MongoDB Atlas
+
+    ND->>App: Mở tab Đang nuôi
+    App->>API: GET /api/vaccination/coops
+    API->>DB: Đọc ChuongTrai + DanhMucGiong
+    DB-->>API: Danh sách chuồng + giống
+    Note over API: computeHarvestInfo cho từng chuồng:<br/>tuổi đàn, tỷ lệ sống, số ngày còn lại,<br/>trạng thái GROWING / SOON / READY / OVERDUE
+    API-->>App: Danh sách chuồng kèm thông tin xuất chuồng
+    App-->>ND: Thẻ chuồng hiện "Còn N ngày tới lứa" hoặc "Quá lứa N ngày"
+
+    ND->>App: Bấm Xuất chuồng
+    App-->>ND: Hộp thoại xác nhận, nhập số con thực xuất
+    ND->>App: Xác nhận
+    App->>API: POST /api/coops/{coopId}/harvest
+
+    alt Chuồng đã xuất trước đó
+        API-->>App: 409 - Chuồng đã xuất chuồng rồi
+    else Số con thực xuất ngoài khoảng 0..số con ban đầu
+        API-->>App: 400 - Số con không hợp lệ
+    else Hợp lệ
+        API->>API: current_quantity = số thực xuất
+        API->>API: status = HARVESTED, harvested_at = hôm nay
+        API->>DB: Lưu chuồng
+        DB-->>API: Đã lưu
+        API->>API: Tính tỷ lệ sống = còn sống / ban đầu x 100
+        API-->>App: 200 - Đã xuất chuồng, tỷ lệ sống X%
+        App->>API: Tải lại danh sách chuồng
+        API-->>App: Danh sách mới
+        App-->>ND: Chuồng biến mất khỏi tab Đang nuôi,<br/>xuất hiện ở tab Đã xuất chuồng
+    end

@@ -1,0 +1,43 @@
+%% Hình 4.x - Sơ đồ tuần tự: Thêm chuồng mới theo giống gà
+%% Điểm đáng chú ý: lịch tiêm sinh tự động, chỉ lấy đúng mũi trong phác đồ của giống.
+sequenceDiagram
+    autonumber
+    actor ND as Người nuôi
+    participant App as add_coop_screen
+    participant API as coopController
+    participant DB as MongoDB Atlas
+
+    ND->>App: Mở màn hình Thêm chuồng
+    App->>API: GET /api/coops/breeds
+    API->>DB: Đọc DanhMucGiong
+    DB-->>API: 13 giống + phac_do_vaccine + harvest_days
+    API-->>App: Danh mục giống
+    App-->>ND: Đổ danh sách giống vào ô chọn
+
+    ND->>App: Nhập tên chuồng, chọn giống, số con, ngày vào đàn
+    App->>API: POST /api/coops
+
+    alt Thiếu trường bắt buộc hoặc số lượng không hợp lệ
+        API-->>App: 400 - Báo lỗi nhập liệu
+    else Hợp lệ
+        API->>DB: Tìm giống theo id_giong
+        alt Không tìm thấy giống
+            DB-->>API: null
+            API-->>App: 404 - Không tìm thấy giống
+        else Có giống
+            DB-->>API: Thông tin giống
+            API->>DB: Kiểm tra mã chuồng đã tồn tại chưa
+            alt Mã chuồng trùng
+                API-->>App: 409 - Mã chuồng đã tồn tại
+            else Mã chuồng mới
+                API->>DB: Đọc LichTiemPhong theo phac_do_vaccine
+                DB-->>API: Danh mục vắc-xin của giống
+                Note over API: Bù inject_at_day từ bảng chuẩn<br/>scheduled_date = ngày vào đàn + inject_at_day<br/>harvest_target_date = ngày vào đàn + harvest_days
+                API->>API: Sinh lịch tiêm, sắp theo ngày tuổi
+                API->>DB: Lưu chuồng mới vào ChuongTrai
+                DB-->>API: Đã lưu
+                API-->>App: 201 - Đã tạo chuồng với N mũi tiêm
+                App-->>ND: Quay về danh sách, chuồng mới hiện ở tab Đang nuôi
+            end
+        end
+    end

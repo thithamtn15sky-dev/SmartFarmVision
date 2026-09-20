@@ -1,0 +1,31 @@
+%% Hình 4.x - Sơ đồ tuần tự: Xem lịch sử scan và chi tiết một lần chẩn đoán
+%% Đường dẫn ảnh lưu tương đối, backend dựng lại URL tuyệt đối theo host đang gọi
+%% nên đổi IP máy chủ không làm hỏng ảnh cũ.
+sequenceDiagram
+    autonumber
+    actor ND as Người nuôi
+    participant App as scan_history_screen
+    participant Det as scan_detail_screen
+    participant API as poultryController
+    participant DB as MongoDB Atlas
+
+    ND->>App: Bấm nút Lịch sử scan ở trang chủ
+    App->>API: GET /api/poultry?limit=50
+    API->>DB: Đọc poultryscans, sắp theo scannedAt giảm dần
+    DB-->>API: Danh sách bản ghi
+    API->>API: Dựng URL ảnh tuyệt đối theo host của yêu cầu
+    API-->>App: Danh sách rút gọn: ngày, bệnh, độ tin cậy, ảnh
+    App-->>ND: Danh sách lần scan trước đây
+
+    ND->>App: Chạm vào một dòng
+    App->>Det: Mở chi tiết kèm scanId
+    Det->>API: GET /api/poultry/{id}
+    alt Không tìm thấy bản ghi
+        API-->>Det: 404 - Không tìm thấy lần scan
+        Det-->>ND: Thông báo bản ghi không còn
+    else Có bản ghi
+        API->>DB: Đọc chi tiết theo _id
+        DB-->>API: Ảnh, triệu chứng, chẩn đoán, phác đồ, nguồn
+        API-->>Det: Chi tiết đầy đủ
+        Det-->>ND: Ảnh gốc, kết quả chẩn đoán,<br/>lời khuyên điều trị - phòng ngừa kèm nguồn
+    end

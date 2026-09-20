@@ -1,0 +1,33 @@
+%% Hình 4.x - Sơ đồ luồng màn hình ứng dụng Flutter
+%% Bốn mục dưới thanh điều hướng: Trang chủ, Máy ảnh, Chuồng trại, Cá nhân.
+flowchart TD
+    HOME["home_screen<br/>Trang chủ: thẻ thời tiết + tóm tắt chuồng"]
+    CAM["camera_screen<br/>Chụp ảnh hoặc chọn từ thư viện"]
+    PREV["diagnosis_preview_screen<br/>Xem lại ảnh + chọn triệu chứng quan sát"]
+    RES["diagnosis_result_screen<br/>Kết quả chẩn đoán + phác đồ + nguồn"]
+    COOPS["coops_screen<br/>Tab Đang nuôi | Tab Đã xuất chuồng"]
+    ADD["add_coop_screen<br/>Thêm chuồng theo giống"]
+    DETAIL["coop_detail_screen<br/>Lịch tiêm, tiến độ, thông tin xuất chuồng"]
+    HIST["scan_history_screen<br/>Lịch sử scan"]
+    SDET["scan_detail_screen<br/>Chi tiết một lần scan"]
+    PROF["profile_screen<br/>Cá nhân"]
+
+    NAV{{"app_bottom_nav_bar"}}
+    NAV --> HOME
+    NAV --> CAM
+    NAV --> COOPS
+    NAV --> PROF
+
+    CAM -->|"chụp xong"| PREV
+    PREV -->|"POST /api/poultry/analyze"| RES
+    PREV -.->|"422 ảnh không chẩn đoán được"| PREV
+    RES -->|"Về trang chủ"| HOME
+
+    HOME -->|"nút Lịch sử scan"| HIST
+    HOME -->|"chạm thẻ chuồng"| DETAIL
+    COOPS -->|"chạm thẻ chuồng"| DETAIL
+    COOPS -->|"nút +"| ADD
+    ADD -->|"tạo xong, trả true"| COOPS
+    COOPS -->|"nút Xuất chuồng"| COOPS
+    DETAIL -->|"nút Hoàn thành mũi tiêm"| DETAIL
+    HIST --> SDET

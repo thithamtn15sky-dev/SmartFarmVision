@@ -1,0 +1,24 @@
+%% Hình 4.x - Sơ đồ trạng thái của một chuồng nuôi
+stateDiagram-v2
+    direction LR
+    [*] --> ACTIVE : Tạo chuồng, sinh lịch tiêm theo phác đồ của giống
+
+    state ACTIVE {
+        direction LR
+        [*] --> GROWING
+        GROWING --> SOON : còn <= 7 ngày tới lứa
+        SOON --> READY : đúng ngày dự kiến xuất chuồng
+        READY --> OVERDUE_LUA : quá ngày mà chưa xuất
+        note right of OVERDUE_LUA
+            Để lâu tốn cám, giá bán giảm
+            nên màn hình cảnh báo đỏ
+        end note
+    }
+
+    ACTIVE --> ISOLATED : Phát hiện dịch, cách ly đàn
+    ISOLATED --> ACTIVE : Hết thời gian cách ly
+    ACTIVE --> HARVESTED : Bấm Xuất chuồng, ghi harvested_at
+    ISOLATED --> HARVESTED : Xuất chuồng sớm
+    HARVESTED --> SOLD : Đã bán hết đàn
+    HARVESTED --> [*] : Hiện ở tab Đã xuất chuồng
+    SOLD --> [*]

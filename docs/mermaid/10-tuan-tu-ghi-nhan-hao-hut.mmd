@@ -1,0 +1,27 @@
+%% Hình 4.x - Sơ đồ tuần tự: Ghi nhận hao hụt đàn
+%% Cập nhật số con còn sống để tỷ lệ xuất chuồng phản ánh đúng thực tế.
+%% Ứng dụng CHƯA có màn hình cho nghiệp vụ này - hiện gọi API trực tiếp qua Postman.
+sequenceDiagram
+    autonumber
+    actor ND as Quản trị viên
+    participant App as Postman
+    participant API as coopController
+    participant DB as MongoDB Atlas
+
+    ND->>App: Nhập current_quantity vào body yêu cầu
+    App->>API: PATCH /api/coops/{coopId}/quantity
+
+    alt Không tìm thấy chuồng
+        API-->>App: 404 - Không tìm thấy chuồng
+    else Số con < 0 hoặc lớn hơn số con lúc vào đàn
+        API-->>App: 400 - Số con phải nằm trong khoảng 0..N
+        App-->>ND: Hiện phản hồi lỗi
+    else Hợp lệ
+        API->>DB: Cập nhật current_quantity
+        DB-->>API: Đã lưu
+        API->>DB: Đọc giống để tính lại chỉ số
+        DB-->>API: harvest_days, trọng lượng xuất chuồng
+        API->>API: Tính lại tỷ lệ sống, số con hao hụt,<br/>tổng khối lượng ước tính khi xuất
+        API-->>App: 200 - Chỉ số xuất chuồng mới
+        App-->>ND: Hiện chỉ số mới, lần mở app sau thẻ chuồng cập nhật theo
+    end

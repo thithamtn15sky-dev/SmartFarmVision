@@ -1,0 +1,26 @@
+%% Hình 4.x - Sơ đồ hoạt động: các cổng kiểm soát trong luồng chẩn đoán
+%% Vẽ riêng phần rẽ nhánh để thấy rõ hệ thống từ chối trả lời khi nào.
+flowchart TD
+    A(["Nhận ảnh + lời khai"]) --> B["Lượt 1: mô hình quan sát ảnh"]
+    B --> C{"Trong ảnh là gì?"}
+    C -->|"ga_che_bien<br/>gà đã làm thịt"| X1["422 - Không chẩn đoán được<br/>Đề nghị chụp gà còn sống"]
+    C -->|"khong_phai_ga"| X1
+    C -->|"khong_ro"| D["Vẫn cho qua<br/>chặn nhầm gà bệnh tệ hơn"]
+    C -->|"ga_song / ga_chet"| D
+
+    D --> E["Tra TrieuChung theo lời khai<br/>suy ra bệnh đối chứng"]
+    E --> F["Lượt 2: chẩn đoán<br/>lời khai đặt CUỐI prompt"]
+    F --> G["Chuẩn hoá nhãn bệnh"]
+    G --> H{"Có dấu hiệu bệnh?"}
+    H -->|"Không, gà còn sống<br/>và không có lời khai"| X2["200 - Không phát hiện bệnh<br/>Khuyên theo dõi thêm"]
+    H -->|"Có"| I["Lọc BenhGiaCam theo benh_tag"]
+    I --> J["Lượt 3: sinh lời khuyên<br/>trích dẫn [1] [2] [3]"]
+    J --> K{"Số trích dẫn có thật?"}
+    K -->|"Không"| L["Loại bỏ trích dẫn bịa"]
+    K -->|"Có"| M["Ánh xạ về url_nguon"]
+    L --> M
+    M --> N["Lưu poultryscans"]
+    N --> O(["Trả kết quả về ứng dụng"])
+
+    classDef stop fill:#F6EEDE,stroke:#8A5A12,color:#1B1F1A
+    class X1,X2 stop
