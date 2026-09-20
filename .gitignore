@@ -14,3 +14,21 @@ backend/uploads/
 # File rác của macOS
 .DS_Store
 **/.DS_Store
+
+# --- MÔ HÌNH VÀ MÔI TRƯỜNG PYTHON (tải bằng backend/scripts/download_models.sh) ---
+
+# File trọng số GGUF nặng hàng GB, GitHub từ chối file trên 100 MB.
+*.gguf
+# CHỈ thư mục models ở gốc kho, KHÔNG phải backend/models/ (nơi chứa schema Mongoose).
+/models/
+/llama_backend_metal/
+
+# Môi trường ảo Python của máy chủ embedding, dựng lại bằng requirements.txt.
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Log chạy thử và bản sao lưu cục bộ
+*.log
+backups/

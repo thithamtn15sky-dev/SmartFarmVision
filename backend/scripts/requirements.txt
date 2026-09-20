@@ -1,0 +1,19 @@
+# Thư viện cho máy chủ embedding (scripts/embedding_server.py).
+#
+# Dựng môi trường (chạy trong thư mục backend/):
+#   python3 -m venv .venv
+#   source .venv/bin/activate
+#   pip install -r scripts/requirements.txt
+#
+# Lần chạy đầu tiên sẽ tự tải hai mô hình từ Hugging Face về ~/.cache/huggingface,
+# tổng khoảng 4,2 GB:
+#   AITeamVN/Vietnamese_Embedding   (sinh vector 1024 chiều)
+#   BAAI/bge-reranker-v2-m3         (xếp hạng lại, chỉ nạp khi có yêu cầu /rerank)
+#
+# Ghim phiên bản tối thiểu theo môi trường đã chạy thực nghiệm ở chương 5
+# (macOS 15 trên Apple M4, Python 3.14, thiết bị mps).
+
+sentence-transformers>=5.6.1
+torch>=2.13.0
+transformers>=4.57.6
+numpy>=2.5.1

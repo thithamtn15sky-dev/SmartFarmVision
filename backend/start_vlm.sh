@@ -8,7 +8,7 @@
 
 set -e
 
-VLM_HOME="$HOME/Downloads/SmartFarmVLM"
+VLM_HOME="${VLM_HOME:-$HOME/Downloads/SmartFarmVLM}"
 BIN="$VLM_HOME/llama_backend_metal/b10092/llama-b10092/llama-server"
 MODEL="$VLM_HOME/models/Qwen3VL-2B-Instruct-Q4_K_M.gguf"
 MMPROJ="$VLM_HOME/models/mmproj-Qwen3VL-2B-Instruct-Q8_0.gguf"
@@ -17,7 +17,11 @@ LOG="/tmp/vlm_smartfarm.log"
 
 # --mmproj là bắt buộc: thiếu nó model sẽ KHÔNG nhìn được ảnh, chỉ đọc chữ.
 for f in "$BIN" "$MODEL" "$MMPROJ"; do
-  [ -f "$f" ] || { echo "❌ Không tìm thấy: $f"; exit 1; }
+  [ -f "$f" ] || {
+    echo "❌ Không tìm thấy: $f"
+    echo "   Tải về bằng: ./scripts/download_models.sh"
+    exit 1
+  }
 done
 
 if lsof -nP -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then

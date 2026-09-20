@@ -1,0 +1,234 @@
+[
+  {
+    "id_giong": "G_AC",
+    "ten_giong": "Gà Ác",
+    "muc_dich_nuoi": "Thịt, Dược liệu",
+    "dac_diem_nhan_dien": "Kích thước nhỏ nhắn. Dấu hiệu nhận biết đặc trưng: Lông trắng xù (lông bông), da đen, thịt đen, chân có 5 ngón (ngũ trảo).",
+    "harvest_days": 45,
+    "trong_luong_xuat_chuong_kg": 0.35,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_ND_IB_L2"
+    ]
+  },
+  {
+    "id_giong": "G_AI_CAP",
+    "ten_giong": "Gà Ai Cập (Siêu trứng HA1/HA2)",
+    "muc_dich_nuoi": "Trứng",
+    "dac_diem_nhan_dien": "Lông hoa mơ (trắng đốm đen hoặc đen đốm trắng) vằn ngang rất rõ nét. Chân màu chì (xám đen). Mào đơn đỏ tươi, tích to.",
+    "harvest_days": 140,
+    "trong_luong_xuat_chuong_kg": 1.5,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2",
+      "VX_THT",
+      "VX_CORYZA"
+    ]
+  },
+  {
+    "id_giong": "G_CONG_NGHIEP_TRANG",
+    "ten_giong": "Gà siêu thịt lông trắng (Cobb/Ross/Arbor Acres)",
+    "muc_dich_nuoi": "Thịt công nghiệp (chuồng kín)",
+    "dac_diem_nhan_dien": "Toàn thân lông trắng toát, ngoại hình đồ sộ, ức cực kỳ to và vươn về phía trước, đùi to, đùi to, mào đơn nhỏ, chân ngắn mập mạp.",
+    "harvest_days": 42,
+    "trong_luong_xuat_chuong_kg": 2.4,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_ND_IB_L2"
+    ]
+  },
+  {
+    "id_giong": "G_DONG_TAO",
+    "ten_giong": "Gà Đông Tảo",
+    "muc_dich_nuoi": "Thịt đặc sản",
+    "dac_diem_nhan_dien": "Cực kỳ dễ nhận diện qua cặp chân: Chân to mập dị thường, xù xì (vảy rồng), bắp đùi to. Da đỏ au, mào sun (mào mâm xôi).",
+    "harvest_days": 240,
+    "trong_luong_xuat_chuong_kg": 3.8,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2",
+      "VX_THT",
+      "VX_CORYZA"
+    ]
+  },
+  {
+    "id_giong": "G_ISA_BROWN",
+    "ten_giong": "Gà siêu trứng Isa Brown (hoặc Lohmann Brown)",
+    "muc_dich_nuoi": "Trứng thương phẩm (lồng sàn)",
+    "dac_diem_nhan_dien": "Lông màu nâu hoặc nâu đỏ sáng. Dáng hình nêm thon gọn đặc trưng của gà đẻ. Mào đơn to, đỏ tươi, thường rủ cong sang một bên. Chân nhỏ màu vàng.",
+    "harvest_days": 135,
+    "trong_luong_xuat_chuong_kg": 1.9,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2",
+      "VX_THT",
+      "VX_CORYZA"
+    ]
+  },
+  {
+    "id_giong": "G_LAI_CHOI",
+    "ten_giong": "Gà Lai Chọi / Mía lai",
+    "muc_dich_nuoi": "Thịt (Trang trại lớn)",
+    "dac_diem_nhan_dien": "Dáng cao to, cổ dài, lông tía đen hoặc mận chín. Đặc điểm nổi bật nhất: Mào nụ (mào sít) rất gọn, chân cao màu vàng đen hoặc xám chì, da thường đỏ rực ở vùng đầu cổ.",
+    "harvest_days": 105,
+    "trong_luong_xuat_chuong_kg": 2.5,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2",
+      "VX_THT"
+    ]
+  },
+  {
+    "id_giong": "G_LEGHORN",
+    "ten_giong": "Gà Leghorn",
+    "muc_dich_nuoi": "Trứng trắng công nghiệp",
+    "dac_diem_nhan_dien": "Lông trắng toát nhưng dáng người rất thon mảnh (khác biệt hoàn toàn với gà thịt lông trắng). Mào đơn rất to và rủ dài che cả một bên mắt, đuôi vểnh cao.",
+    "harvest_days": 135,
+    "trong_luong_xuat_chuong_kg": 1.7,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2",
+      "VX_THT",
+      "VX_CORYZA"
+    ]
+  },
+  {
+    "id_giong": "G_LUONG_PHUONG",
+    "ten_giong": "Gà Lương Phượng",
+    "muc_dich_nuoi": "Thịt (Lông màu)",
+    "dac_diem_nhan_dien": "Ngoại hình rất giống gà ta truyền thống nhưng khung xương to hơn. Lông màu hoa mơ, vàng rơm hoặc đốm đen. Lông cổ thường có vệt đen, mào đơn đỏ chót.",
+    "harvest_days": 70,
+    "trong_luong_xuat_chuong_kg": 2.1,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2"
+    ]
+  },
+  {
+    "id_giong": "G_MINH_DU",
+    "ten_giong": "Gà lai Minh Dư / J-Dabaco",
+    "muc_dich_nuoi": "Thịt (Trang trại lớn)",
+    "dac_diem_nhan_dien": "Ngoại hình chuẩn 'gà ta'. Trống có cờ tía, lông mận chín, đuôi dài cong vút. Mái lông lá chuối khô. Ức sâu, chân vàng trơn láng.",
+    "harvest_days": 95,
+    "trong_luong_xuat_chuong_kg": 2.2,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2",
+      "VX_THT"
+    ]
+  },
+  {
+    "id_giong": "G_RI_LAI",
+    "ten_giong": "Gà Ri lai / Ri vàng rơm",
+    "muc_dich_nuoi": "Thịt (Trang trại/Thả vườn)",
+    "dac_diem_nhan_dien": "Dáng thon gọn, di chuyển nhanh nhẹn. Mái lông vàng rơm sáng, trống lông tía đen hoặc tía đỏ. Chân vàng, nhỏ, da vàng ươm.",
+    "harvest_days": 90,
+    "trong_luong_xuat_chuong_kg": 1.8,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2",
+      "VX_THT"
+    ]
+  },
+  {
+    "id_giong": "G_SASSO",
+    "ten_giong": "Gà Sasso",
+    "muc_dich_nuoi": "Thịt cao cấp",
+    "dac_diem_nhan_dien": "Lông màu nâu đỏ sậm (đỏ bã trầu). Thân hình to lớn, chân màu vàng đậm và rất to, da vàng. Trống có mào đơn to, đỏ rực.",
+    "harvest_days": 80,
+    "trong_luong_xuat_chuong_kg": 2.6,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2",
+      "VX_THT"
+    ]
+  },
+  {
+    "id_giong": "G_TAM_HOANG",
+    "ten_giong": "Gà Tam Hoàng",
+    "muc_dich_nuoi": "Thịt, Trứng (Nuôi bán công nghiệp)",
+    "dac_diem_nhan_dien": "Đặc trưng '3 vàng': Lông vàng, chân vàng, mỏ vàng. Thân hình hình trụ chắc nịch, ngực và đùi rất to, mào đơn đứng thẳng.",
+    "harvest_days": 70,
+    "trong_luong_xuat_chuong_kg": 2,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2"
+    ]
+  },
+  {
+    "id_giong": "G_TRE",
+    "ten_giong": "Gà Tre",
+    "loai_hinh": "Gà đặc sản / thả vườn",
+    "harvest_days": 110,
+    "trong_luong_xuat_chuong_chuan_kg": 1,
+    "phac_do_vaccine": [
+      "VX_MAREK",
+      "VX_CAU_TRUNG",
+      "VX_ND_IB_L1",
+      "VX_DAU_GA",
+      "VX_GUMBORO_L1",
+      "VX_H5N1_L1",
+      "VX_ND_IB_L2",
+      "VX_THT",
+      "VX_CORYZA"
+    ]
+  }
+]

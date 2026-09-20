@@ -1,0 +1,140 @@
+[
+  {
+    "id_trieu_chung": "TC_CHAN_01",
+    "vi_tri_quan_sat": "Chân",
+    "mo_ta": "Xuất huyết, có các vệt tụ máu màu đỏ hoặc tím dưới da chân.",
+    "benh_lien_quan": [
+      "Cúm gia cầm (H5N1)"
+    ],
+    "benh_ma": [
+      "cum_gia_cam"
+    ],
+    "embedding_input": "Chân: Xuất huyết, có các vệt tụ máu màu đỏ hoặc tím dưới da chân."
+  },
+  {
+    "id_trieu_chung": "TC_CHAN_02",
+    "vi_tri_quan_sat": "Chân",
+    "mo_ta": "Liệt một hoặc cả hai chân, đi lại lảo đảo, loạng choạng.",
+    "benh_lien_quan": [
+      "Newcastle (Gà rù)"
+    ],
+    "benh_ma": [
+      "newcastle"
+    ],
+    "embedding_input": "Chân: Liệt một hoặc cả hai chân, đi lại lảo đảo, loạng choạng."
+  },
+  {
+    "id_trieu_chung": "TC_DAU_01",
+    "vi_tri_quan_sat": "Đầu/Mào/Mắt",
+    "mo_ta": "Mào và tích sưng to, đổi màu tím tái.",
+    "benh_lien_quan": [
+      "Cúm gia cầm (H5N1)"
+    ],
+    "benh_ma": [
+      "cum_gia_cam"
+    ],
+    "embedding_input": "Đầu/Mào/Mắt: Mào và tích sưng to, đổi màu tím tái."
+  },
+  {
+    "id_trieu_chung": "TC_DAU_02",
+    "vi_tri_quan_sat": "Đầu/Mào/Mắt",
+    "mo_ta": "Sưng phù một hoặc hai bên mặt, mắt nhắm nghiền, có dịch nhầy hôi.",
+    "benh_lien_quan": [
+      "Sổ mũi truyền nhiễm (Coryza)"
+    ],
+    "benh_ma": [
+      "so_mui_truyen_nhiem"
+    ],
+    "embedding_input": "Đầu/Mào/Mắt: Sưng phù một hoặc hai bên mặt, mắt nhắm nghiền, có dịch nhầy hôi."
+  },
+  {
+    "id_trieu_chung": "TC_DAU_03",
+    "vi_tri_quan_sat": "Đầu/Mào/Mắt",
+    "mo_ta": "Xuất hiện mụn nước, mụn mủ hoặc vảy sừng sần sùi màu nâu sẫm ở vùng da không có lông.",
+    "benh_lien_quan": [
+      "Đậu gà"
+    ],
+    "benh_ma": [
+      "dau_ga"
+    ],
+    "embedding_input": "Đầu/Mào/Mắt: Xuất hiện mụn nước, mụn mủ hoặc vảy sừng sần sùi màu nâu sẫm ở vùng da không có lông."
+  },
+  {
+    "id_trieu_chung": "TC_PHAN_01",
+    "vi_tri_quan_sat": "Phân",
+    "mo_ta": "Tiêu chảy phân xanh, phân trắng lẫn lộn.",
+    "benh_lien_quan": [
+      "Newcastle (Gà rù)"
+    ],
+    "benh_ma": [
+      "newcastle"
+    ],
+    "embedding_input": "Phân: Tiêu chảy phân xanh, phân trắng lẫn lộn."
+  },
+  {
+    "id_trieu_chung": "TC_PHAN_02",
+    "vi_tri_quan_sat": "Phân",
+    "mo_ta": "Phân có màu sáp nâu, phân lẫn màng nhầy hoặc máu tươi.",
+    "benh_lien_quan": [
+      "Cầu trùng"
+    ],
+    "benh_ma": [
+      "cau_trung"
+    ],
+    "embedding_input": "Phân: Phân có màu sáp nâu, phân lẫn màng nhầy hoặc máu tươi."
+  },
+  {
+    "id_trieu_chung": "TC_TOAN_THAN_01",
+    "vi_tri_quan_sat": "Toàn thân",
+    "mo_ta": "Triệu chứng thần kinh: Ngoẹo cổ, đầu gập xuống ngực hoặc nhìn ngược ra sau, đi vòng quanh.",
+    "benh_lien_quan": [
+      "Newcastle (Gà rù)"
+    ],
+    "benh_ma": [
+      "newcastle"
+    ],
+    "embedding_input": "Toàn thân: Triệu chứng thần kinh: Ngoẹo cổ, đầu gập xuống ngực hoặc nhìn ngược ra sau, đi vòng quanh."
+  },
+  {
+    "id_trieu_chung": "TC_TOAN_THAN_02",
+    "vi_tri_quan_sat": "Toàn thân",
+    "mo_ta": "Lông xù, rút cổ, ủ rũ, tụm đống lại với nhau như bị lạnh.",
+    "benh_lien_quan": [
+      "Cầu trùng",
+      "Newcastle (Gà rù)"
+    ],
+    "benh_ma": [
+      "cau_trung",
+      "newcastle"
+    ],
+    "embedding_input": "Toàn thân: Lông xù, rút cổ, ủ rũ, tụm đống lại với nhau như bị lạnh."
+  },
+  {
+    "id_trieu_chung": "TC_TOAN_THAN_03",
+    "vi_tri_quan_sat": "Toàn thân",
+    "mo_ta": "Thở khò khè, rướn cổ há mỏ để thở, vẩy mỏ liên tục.",
+    "benh_lien_quan": [
+      "Sổ mũi truyền nhiễm (Coryza)",
+      "Cúm gia cầm (H5N1)",
+      "Newcastle (Gà rù)"
+    ],
+    "benh_ma": [
+      "cum_gia_cam",
+      "newcastle",
+      "so_mui_truyen_nhiem"
+    ],
+    "embedding_input": "Toàn thân: Thở khò khè, rướn cổ há mỏ để thở, vẩy mỏ liên tục."
+  },
+  {
+    "id_trieu_chung": "TC_TOAN_THAN_04",
+    "vi_tri_quan_sat": "Toàn thân",
+    "mo_ta": "Chết đột ngột với số lượng lớn mà không có triệu chứng báo trước rõ ràng.",
+    "benh_lien_quan": [
+      "Cúm gia cầm (H5N1)"
+    ],
+    "benh_ma": [
+      "cum_gia_cam"
+    ],
+    "embedding_input": "Toàn thân: Chết đột ngột với số lượng lớn mà không có triệu chứng báo trước rõ ràng."
+  }
+]

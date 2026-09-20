@@ -1,0 +1,74 @@
+[
+  {
+    "id_vacxin": "VX_CAU_TRUNG",
+    "ten_vacxin": "Vắc-xin Cầu trùng (Coccidiosis)",
+    "benh_phong_ngua": "Bệnh Cầu trùng",
+    "thoi_diem_tiem_chuan": "1 - 3 ngày tuổi",
+    "phuong_phap_cap": "Nhỏ miệng, phun sương hoặc trộn mồi",
+    "luu_y": "Nếu đã tiêm vắc-xin thì không dùng thuốc trị cầu trùng trộn vào thức ăn trong 3 tuần đầu."
+  },
+  {
+    "id_vacxin": "VX_CORYZA",
+    "ten_vacxin": "Vắc-xin Sổ mũi truyền nhiễm (Coryza)",
+    "benh_phong_ngua": "Bệnh Sổ mũi truyền nhiễm",
+    "thoi_diem_tiem_chuan": "4 - 6 tuần tuổi (Lần 1), tiêm nhắc trước khi đẻ",
+    "phuong_phap_cap": "Tiêm dưới da hoặc tiêm bắp",
+    "luu_y": "Chủ yếu áp dụng cho gà đẻ, gà giống hoặc các trang trại lớn."
+  },
+  {
+    "id_vacxin": "VX_DAU_GA",
+    "ten_vacxin": "Vắc-xin Đậu gà (Fowl Pox)",
+    "benh_phong_ngua": "Bệnh Đậu gà",
+    "thoi_diem_tiem_chuan": "7 - 10 ngày tuổi",
+    "phuong_phap_cap": "Chủng màng cánh",
+    "luu_y": "Kiểm tra vết chủng sau 5-7 ngày, nếu nổi cục to bằng hạt đỗ là vắc-xin đã 'đậu'."
+  },
+  {
+    "id_vacxin": "VX_GUMBORO_L1",
+    "ten_vacxin": "Vắc-xin Gumboro (Lần 1)",
+    "benh_phong_ngua": "Bệnh Gumboro (IBD)",
+    "thoi_diem_tiem_chuan": "10 - 14 ngày tuổi",
+    "phuong_phap_cap": "Cho uống hoặc nhỏ mắt",
+    "luu_y": "Thời điểm tiêm phụ thuộc vào kháng thể mẹ truyền."
+  },
+  {
+    "id_vacxin": "VX_H5N1_L1",
+    "ten_vacxin": "Vắc-xin Cúm gia cầm (H5N1)",
+    "benh_phong_ngua": "Cúm gia cầm (Avian Influenza)",
+    "thoi_diem_tiem_chuan": "14 - 21 ngày tuổi",
+    "phuong_phap_cap": "Tiêm dưới da cổ hoặc tiêm bắp ngực",
+    "luu_y": "Là vắc-xin vô hoạt, cần tiêm nhắc lại sau 1 tháng đối với gà đẻ/gà giống."
+  },
+  {
+    "id_vacxin": "VX_MAREK",
+    "ten_vacxin": "Vắc-xin Marek's Disease",
+    "benh_phong_ngua": "Bệnh Marek",
+    "thoi_diem_tiem_chuan": "1 ngày tuổi (tại trạm ấp)",
+    "phuong_phap_cap": "Tiêm dưới da cổ",
+    "luu_y": "Bắt buộc đối với gà đẻ và gà thịt nuôi dài ngày."
+  },
+  {
+    "id_vacxin": "VX_ND_IB_L1",
+    "ten_vacxin": "Vắc-xin Newcastle & IB (Lần 1)",
+    "benh_phong_ngua": "Bệnh Newcastle (Gà rù) & Viêm phế quản truyền nhiễm",
+    "thoi_diem_tiem_chuan": "3 - 5 ngày tuổi",
+    "phuong_phap_cap": "Nhỏ mắt hoặc nhỏ mũi",
+    "luu_y": "Sử dụng vắc-xin nhược độc (Lasota hoặc hệ F)."
+  },
+  {
+    "id_vacxin": "VX_ND_IB_L2",
+    "ten_vacxin": "Vắc-xin Newcastle & IB (Lần 2)",
+    "benh_phong_ngua": "Bệnh Newcastle (Gà rù)",
+    "thoi_diem_tiem_chuan": "18 - 21 ngày tuổi",
+    "phuong_phap_cap": "Pha nước cho uống hoặc tiêm",
+    "luu_y": "Mũi nhắc lại rất quan trọng để tạo miễn dịch vững chắc."
+  },
+  {
+    "id_vacxin": "VX_THT",
+    "ten_vacxin": "Vắc-xin Tụ huyết trùng",
+    "benh_phong_ngua": "Tụ huyết trùng gia cầm (Pasteurellosis)",
+    "thoi_diem_tiem_chuan": "25 - 30 ngày tuổi",
+    "phuong_phap_cap": "Tiêm dưới da",
+    "luu_y": "Thường áp dụng cho vùng có dịch tễ."
+  }
+]
