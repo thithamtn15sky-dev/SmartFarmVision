@@ -2,6 +2,20 @@ const PoultryScan = require('../models/PoultryScan');
 const axios = require('axios');
 const fs = require('fs');
 const { getDiseaseKnowledge, getSymptomCatalog, canonicalLabel, labelFromSymptomText } = require('../services/diseaseKnowledge');
+const vectorRetrieval = require('../services/vectorRetrieval');
+const { toCode, labelOf } = require('../constants/diseaseCodes');
+
+// Truy xuất ngữ nghĩa hai chặng (Atlas Vector Search + BM25 + reranker).
+//
+// BẬT MẶC ĐỊNH. Nó cần thêm một tiến trình nữa (scripts/embedding_server.py),
+// nhưng mọi chỗ dùng đều có đường lùi về cách cũ: dịch vụ embedding không bật
+// hoặc chết giữa chừng thì hệ thống vẫn chẩn đoán được như trước, chỉ kém hơn.
+//
+// Đặt USE_VECTOR_RAG=false (hoặc 0) trong .env để tắt hẳn, dùng khi so sánh hai
+// đường hoặc khi máy không đủ bộ nhớ cho reranker.
+const USE_VECTOR_RAG = !['false', '0', 'no'].includes(
+    String(process.env.USE_VECTOR_RAG ?? 'true').trim().toLowerCase()
+);
 const { generateAdvice } = require('../services/treatmentAdvisor');
 const { describeImages } = require('../services/imageObserver');
 
@@ -162,11 +176,44 @@ exports.analyzeImages = async (req, res) => {
         // bầm tím, chân chảy máu" rồi kết luận H5N1 98%, trong khi người nuôi đã khai
         // "sưng phù mặt một bên" - dấu hiệu đặc trưng của Coryza.
         let benhTuLoiKhai = null;
+        let benhThuHep = null;    // tập bệnh do chặng 1 thu hẹp, dùng lại ở chặng 2
+        let vectorTruyVan = null; // vector của query, mã hoá một lần dùng cho cả hai chặng
+        let nguonSuyLuan = null;  // 'tra_cuu' (tất định) hay 'vector' (tương đồng ngữ nghĩa)
+        let diemTuongDong = null;
+        // Query của RAG: mô tả ảnh (lượt 1) ghép với lời khai người nuôi. Dùng CHUNG
+        // cho cả hai chặng truy xuất đúng như thiết kế.
+        const truyVanRAG = `${observationText}${rawObservation ? `\nNgười nuôi mô tả: ${rawObservation}` : ''}`;
         if (rawObservation) {
+            // CHẶNG 1 của RAG: query ghép từ mô tả ảnh (lượt 1) và lời khai người nuôi,
+            // tìm trong TrieuChung ra triệu chứng gần nhất rồi suy ra bệnh liên quan.
+            // So khớp theo vector bắt được cách diễn đạt khác nhau, còn cách dò theo
+            // từ trùng cũ thì trượt (ví dụ "ngoẹo cổ, liệt chân" không khớp nổi mô tả
+            // trong CSDL vì chỉ trùng 2/4 từ).
+            // Thứ tự có chủ đích: tra cứu TẤT ĐỊNH trước, vector sau.
+            // Tra tất định đòi trùng >= 60% số từ nên hiếm khi khớp bừa, xứng đáng để
+            // prompt khẳng định "CSDL nói đây là bệnh X". Vector thì luôn trả về kết quả
+            // gần nhất kể cả khi chẳng có gì khớp, nên chỉ dùng làm gợi ý mềm.
             try {
                 benhTuLoiKhai = await labelFromSymptomText(rawObservation);
+                if (benhTuLoiKhai) nguonSuyLuan = 'tra_cuu';
             } catch (loiTra) {
                 console.error('Không tra được bệnh từ lời khai:', loiTra.message);
+            }
+            if (USE_VECTOR_RAG) {
+                try {
+                    const chang1 = await vectorRetrieval.retrieveSymptoms(truyVanRAG);
+                    if (chang1) {
+                        benhThuHep = chang1.codes;
+                        vectorTruyVan = chang1.vector;
+                        if (!benhTuLoiKhai) {
+                            benhTuLoiKhai = labelOf(chang1.rows[0].benh_ma?.[0]);
+                            diemTuongDong = chang1.rows[0].score;
+                            if (benhTuLoiKhai) nguonSuyLuan = 'vector';
+                        }
+                    }
+                } catch (loiVector) {
+                    console.error('Chặng 1 truy xuất vector lỗi:', loiVector.message);
+                }
             }
         }
 
@@ -175,13 +222,25 @@ exports.analyzeImages = async (req, res) => {
         //   - lời khai đặt đầu prompt -> H5N1 85% (SAI, ảnh lấn át lời khai)
         //   - lời khai đặt cuối prompt -> Newcastle 95% (ĐÚNG)
         // Nguyên nhân là hiệu ứng recency: model coi trọng phần cuối prompt hơn.
-        const observationBlock = rawObservation
-            ? `*** QUAN TRỌNG NHẤT - NGƯỜI NUÔI TRỰC TIẾP QUAN SÁT ĐƯỢC: "${rawObservation}" ***${benhTuLoiKhai ? `
+        // Hai mức khẳng định khác nhau tuỳ nguồn suy ra bệnh: tra cứu tất định thì
+        // nói chắc, còn tương đồng ngữ nghĩa thì chỉ gợi ý - đo được là điểm tương
+        // đồng của câu không liên quan (0,705) còn cao hơn câu tả triệu chứng thật
+        // (0,702), nên không thể coi điểm cao là bằng chứng.
+        const khoiDoiChieu = !benhTuLoiKhai ? '' : (nguonSuyLuan === 'tra_cuu' ? `
         ĐỐI CHIẾU CƠ SỞ DỮ LIỆU TRIỆU CHỨNG: các dấu hiệu người nuôi khai là dấu hiệu
         ĐẶC TRƯNG của bệnh "${benhTuLoiKhai}". Đây là kết quả tra cứu CSDL, không phải suy đoán.
         Bệnh này BẮT BUỘC phải xuất hiện trong "differential_diagnoses".
         Nếu bạn vẫn chọn bệnh khác làm kết luận chính, phải nêu rõ trong "luu_y"
-        vì sao bằng chứng trên ảnh đủ mạnh để bác bỏ lời khai của người nuôi.` : ''}
+        vì sao bằng chứng trên ảnh đủ mạnh để bác bỏ lời khai của người nuôi.` : `
+        GỢI Ý TỪ CSDL: triệu chứng gần giống nhất trong cơ sở dữ liệu thuộc bệnh
+        "${benhTuLoiKhai}" (độ tương đồng ${Number(diemTuongDong || 0).toFixed(2)}).
+        Đây là gợi ý theo độ giống ngữ nghĩa, KHÔNG phải kết luận chắc chắn.
+        Tuy vậy BẮT BUỘC đưa bệnh này vào "differential_diagnoses" để cân nhắc;
+        bạn được toàn quyền chọn bệnh khác làm kết luận chính nếu ảnh và lời khai
+        chỉ về hướng khác, nhưng không được bỏ qua nó hoàn toàn.`);
+
+        const observationBlock = rawObservation
+            ? `*** QUAN TRỌNG NHẤT - NGƯỜI NUÔI TRỰC TIẾP QUAN SÁT ĐƯỢC: "${rawObservation}" ***${khoiDoiChieu}
         Lời khai này ĐÁNG TIN HƠN hình ảnh, vì ảnh chỉ ghi lại một khoảnh khắc và không thấy được
         hành vi, tiếng thở hay phân của gà. HÃY ƯU TIÊN LỜI KHAI khi chọn bệnh.`
             : `*** NGƯỜI NUÔI KHÔNG MÔ TẢ GÌ THÊM ***
@@ -360,10 +419,32 @@ ${observationText}
         const topLabel = (aiJson.differential_diagnoses || [])[0]?.label
             || aiJson.most_likely_label;
         let knowledge = null;
-        try {
-            knowledge = await getDiseaseKnowledge(topLabel);
-        } catch (ragError) {
-            console.error('Không tra được BenhGiaCam:', ragError.message);
+        // CHẶNG 2 của RAG: lọc BenhGiaCam theo bệnh đã chẩn đoán rồi mới xếp hạng
+        // theo độ liên quan, thay vì bê nguyên mọi tài liệu của bệnh đó vào prompt.
+        if (USE_VECTOR_RAG) {
+            try {
+                // Nếu không quy được nhãn về mã, dùng tạm tập bệnh chặng 1 thu hẹp.
+                const maBenh = toCode(topLabel) || (benhThuHep && benhThuHep[0]);
+                if (maBenh) {
+                    // Thứ tự ưu tiên theo kết quả thực nghiệm (mục 5.4 của báo cáo):
+                    // BM25 + reranker đạt điểm cao nhất, truy xuất vector đứng sau,
+                    // lấy toàn bộ tài liệu của bệnh là đường lùi cuối.
+                    knowledge = await vectorRetrieval.knowledgeBestStrategy(truyVanRAG, maBenh);
+                    if (!knowledge) {
+                        knowledge = await vectorRetrieval.knowledgeFromVector(
+                            truyVanRAG, maBenh, { vector: vectorTruyVan });
+                    }
+                }
+            } catch (loiVector) {
+                console.error('Chặng 2 truy xuất vector lỗi:', loiVector.message);
+            }
+        }
+        if (!knowledge) {
+            try {
+                knowledge = await getDiseaseKnowledge(topLabel);
+            } catch (ragError) {
+                console.error('Không tra được BenhGiaCam:', ragError.message);
+            }
         }
 
         const aiNextSteps = Array.isArray(aiJson.recommended_next_steps)
